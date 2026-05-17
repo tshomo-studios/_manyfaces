@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "MangoGrotesque";
+  src: url("./assets/fonts/MangoGrotesque-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MangoGrotesque";
+  src: url("./assets/fonts/MangoGrotesque-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MangoGrotesque";
+  src: url("./assets/fonts/MangoGrotesque-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MangoGrotesque";
+  src: url("./assets/fonts/MangoGrotesque-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-mango-grotesque: "MangoGrotesque", sans-serif;
+
+  --color-chinese-black: oklch(21.342% 0.00002 271.152);
+  --color-absolute-zero: oklch(44.945% 0.18517 260.395);
+  --color-zero-lime: oklch(89.096% 0.18502 125.891);
+  --color-platinum: oklch(93.951% 0.00257 107.086);
+  --color-boulder: oklch(57.61% 0.00007 271.152);
+}
