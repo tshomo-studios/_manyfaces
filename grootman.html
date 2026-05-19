@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/src/style.css" rel="stylesheet">
+
+    <title>Grootman | manyfaces</title>
+  </head>
+
+
+  <body class="font-mango-grotesque bg-linear-to-t from-neutral-500 to-neutral-200 text-black">
+    <nav class="py-6 px-7 md:px-20 lg:px-28 flex justify-between items-center fixed inset-x-0 top-0 z-50">
+        <a href="/"><img src="src/assets/img/manyfacesLogo.svg" alt="manyfaces Logo" width="150"></a>
+        <div class="hidden md:flex items-center gap-6 text-4xl">
+            <a href="" aria-label="Account">◉</a>
+            <a href="" aria-label="Cart">▢</a>
+        </div>
+    </nav>
+
+
+    <main>
+        <section class="px-7 pt-24 md:px-20 lg:px-28">
+            <div class="grid gap-10 md:grid-cols-2 md:items-start md:gap-20">
+                <div class="flex justify-center md:sticky md:top-20">
+                    <img src="src/assets/img/grootman.png" alt="Grootman collectible figure" class="w-full max-w-155 object-contain">
+                </div>
+
+                <div class="flex flex-col gap-6 pt-0 md:pt-44">
+                    <div>
+                        <h1 class="text-8xl sm:text-[10rem] lg:text-[12rem] font-semibold leading-none">Grootman</h1>
+
+                        <div class="flex items-center justify-between gap-6">
+                            <p class="text-4xl font-semibold">R 899</p>
+                            <a href="" class="font-sans text-sm font-semibold underline">Add to wishlist</a>
+                        </div>
+                    </div>
+
+                    <p class="max-w-md font-sans text-sm leading-5">
+                        A narrative of Grootman, a taxi driver in Johannesburg, exploring themes of struggle, dreams, and familial responsibility.
+                    </p>
+
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 items-center rounded-full border border-black px-4 text-xl font-semibold" data-product-quantity>
+                            <button type="button" class="px-2" aria-label="Decrease quantity" data-quantity-minus>-</button>
+                            <span class="px-3" data-quantity-value>1</span>
+                            <button type="button" class="px-2" aria-label="Increase quantity" data-quantity-plus>+</button>
+                        </div>
+
+                        <button type="button" class="h-10 flex-1 rounded-full bg-black px-8 text-xl font-semibold text-white md:flex-none md:px-20" data-add-to-cart data-product-id="grootman" data-product-title="Grootman" data-product-price="899">
+                            add to cart
+                        </button>
+                    </div>
+
+                    <blockquote class="hidden max-w-md pt-8 text-6xl font-semibold leading-none md:block">
+                        "Some people wear uniforms. Others wear dreams."
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section class="pt-8 md:px-20 md:pt-16 lg:px-28">
+            <div class="grid gap-10 md:grid-cols-2 md:items-start md:gap-20">
+                <div class="overflow-hidden">
+                    <img src="src/assets/img/IMG_4227.PNG" alt="Close-up of Grootman collectible figure" class="w-full object-cover md:max-w-190 mask-b-from-40% mask-b-to-90%">
+                </div>
+
+                <div class="grid gap-9 px-7 md:px-0 md:pt-14">
+                    <div>
+                        <h2 class="text-4xl font-semibold">Details</h2>
+                        <p class="max-w-md font-sans text-sm leading-5">
+                            Right here, we have Grootman, a representation of our fathers, uncles and grand timers. We see him sitting on the front porch/patio from that well-respected house around the block, or sitting in front of the fleet of taxi's.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-4xl font-semibold">Dimensions</h2>
+                        <p class="font-sans text-base font-semibold">250mm x 180mm x 180mm</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-4xl font-semibold">Material</h2>
+                    </div>
+
+                    <div class="flex items-center gap-6 pt-2 md:pt-20">
+                        <p class="text-6xl font-semibold">R 899</p>
+                        <button type="button" class="h-14 rounded-full bg-black px-10 text-2xl font-semibold text-white" data-add-to-cart data-product-id="grootman" data-product-title="Grootman" data-product-price="899">
+                            add to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="flex flex-col pt-16 md:pt-24">
+        <div class="space-y-03 px-10 md:px-20">
+            <ul class="text-5xl md:text-5xl font-semibold"> 
+                <li class="hover:text-platinum transition-colors delay-75"><a href="">about</a></li>
+                <li class="hover:text-platinum transition-colors delay-75"><a href="">contact us</a></li>
+                <li class="hover:text-platinum transition-colors delay-75"><a href="">FAQs</a></li>
+                <li class="hover:text-platinum transition-colors delay-75"><a href="">terms of service</a></li>
+                <li class="hover:text-platinum transition-colors delay-75"><a href="">privacy policy</a></li>  
+            </ul>
+
+        </div>
+        <img src="src/assets/img/manyfacesFooterLogo.svg" alt="" class="w-full h-auto">
+    </footer>
+    
+
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
