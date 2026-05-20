@@ -11,8 +11,12 @@
 
 
   <body  class="font-mango-grotesque bg-linear-to-t from-neutral-500 to-neutral-200 text-black">
-    <nav class="py-2 px-7 flex justify-start items-center fixed">
+    <nav class="py-2 px-7 flex justify-between items-center fixed inset-x-0 top-0 z-50">
         <a href=""><img src="src/assets/img/manyfacesLogo.svg" alt="manyfaces Logo" width="150"></a>
+        <button type="button" class="relative grid size-11 place-items-center" aria-label="Open cart" data-cart-open>
+            <img src="src/assets/img/shopping_bag.svg" alt="" class="w-6">
+            <span class="absolute -right-1 top-0 grid size-5 place-items-center rounded-full bg-black font-sans text-[11px] font-bold text-white" data-cart-count>0</span>
+        </button>
     </nav>
 
 
@@ -46,6 +50,36 @@
         </div>
         <img src="src/assets/img/manyfacesFooterLogo.svg" alt="" class="w-full h-auto">
     </footer>
+
+    <div class="fixed inset-0 z-60 hidden bg-black/60 opacity-0 transition-opacity duration-500" data-cart-backdrop></div>
+
+    <aside class="fixed inset-x-0 bottom-0 z-70 flex max-h-[92svh] translate-y-full flex-col overflow-y-auto rounded-t-[2rem] bg-black px-7 py-7 text-white transition-transform duration-500 md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[430px] md:translate-x-full md:translate-y-0 md:rounded-l-[2rem] md:rounded-tr-none md:px-8 md:py-8" aria-hidden="true" data-cart-drawer>
+        <div class="flex items-start justify-between gap-6">
+            <h2 class="text-7xl font-semibold leading-none md:text-8xl">Checkout</h2>
+            <button type="button" class="text-5xl leading-none" aria-label="Close cart" data-cart-close>&times;</button>
+        </div>
+
+        <div class="mt-12 grid gap-6" data-cart-items></div>
+
+        <p class="mt-12 hidden font-sans text-sm text-white/70" data-cart-empty>Your cart is empty.</p>
+
+        <div class="mt-12 border-t border-dashed border-white/80 pt-20">
+            <div class="flex items-start justify-between gap-8">
+                <div>
+                    <p class="text-4xl font-semibold">Subtotal</p>
+                    <p class="mt-4 font-sans text-sm">Shipping</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-4xl font-semibold" data-cart-subtotal>R0</p>
+                    <p class="mt-4 max-w-40 font-sans text-sm leading-5">Included in price when located South Africa</p>
+                </div>
+            </div>
+
+            <button type="button" class="mt-14 h-15 w-full rounded-full bg-white text-4xl font-semibold text-black disabled:opacity-40" data-checkout-button>
+                Checkout
+            </button>
+        </div>
+    </aside>
     
 
 
