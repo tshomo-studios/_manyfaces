@@ -23,7 +23,7 @@
     </nav>
 
 
-    <main>
+    <main data-product-page data-product-handle="grootman">
         <section class="px-7 pt-24 md:px-20 lg:px-28">
             <div class="grid gap-10 md:grid-cols-2 md:items-start md:gap-20">
                 <div class="flex justify-center md:sticky md:top-20">
@@ -32,10 +32,10 @@
 
                 <div class="flex flex-col gap-6 pt-0 md:pt-44">
                     <div>
-                        <h1 class="text-8xl sm:text-[10rem] lg:text-[12rem] font-semibold leading-none">Grootman</h1>
+                        <h1 class="text-8xl sm:text-[10rem] lg:text-[12rem] font-semibold leading-none" data-product-title>Grootman</h1>
 
                         <div class="flex items-center gap-6">
-                            <p class="text-4xl font-semibold">R 899</p>
+                            <p class="text-4xl font-semibold" data-product-price>R 899</p>
                         </div>
                     </div>
 
@@ -50,8 +50,8 @@
                             <button type="button" class="px-2" aria-label="Increase quantity" data-quantity-plus>+</button>
                         </div>
 
-                        <button type="button" class="h-10 flex-1 rounded-full bg-black px-8 text-xl font-semibold text-white md:flex-none md:px-20" data-add-to-cart data-product-id="grootman" data-product-title="Grootman" data-product-price="899" data-product-subtitle="Art toy (25cm x 18cm x 18cm)">
-                            add to cart
+                        <button type="button" class="h-10 flex-1 rounded-full bg-black px-8 text-xl font-semibold text-white disabled:opacity-40 md:flex-none md:px-20" data-add-to-cart disabled>
+                            loading…
                         </button>
                     </div>
 
@@ -86,9 +86,9 @@
                     </div>
 
                     <div class="flex items-center gap-6 pt-2 md:pt-20">
-                        <p class="text-6xl font-semibold">R 899</p>
-                        <button type="button" class="h-14 rounded-full bg-black px-10 text-2xl font-semibold text-white" data-add-to-cart data-product-id="grootman" data-product-title="Grootman" data-product-price="899" data-product-subtitle="Art toy (25cm x 18cm x 18cm)">
-                            add to cart
+                        <p class="text-6xl font-semibold" data-product-price>R 899</p>
+                        <button type="button" class="h-14 rounded-full bg-black px-10 text-2xl font-semibold text-white disabled:opacity-40" data-add-to-cart disabled>
+                            loading…
                         </button>
                     </div>
                 </div>

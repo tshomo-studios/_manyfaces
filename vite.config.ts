@@ -11,7 +11,6 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         grootman: fileURLToPath(new URL('./grootman.html', import.meta.url)),
-        checkout: fileURLToPath(new URL('./checkout.html', import.meta.url)),
       },
     },
   },

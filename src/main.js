@@ -1,41 +1,19 @@
 import './style.css';
-import cartProductImage from './assets/img/Frame 3.png';
 import removeIcon from './assets/img/delete_forever.svg';
+import {
+  fetchProductByHandle,
+  fetchCart,
+  addToCart,
+  updateLineQuantity,
+  removeLine,
+} from './shopify/client.js';
 
-const cartStorageKey = 'manyfaces-cart';
-const defaultProductImage = cartProductImage;
 const defaultProductSubtitle = 'Art toy (25cm x 18cm x 18cm)';
 
-const readCart = () => {
-  const savedCart = localStorage.getItem(cartStorageKey);
-
-  if (!savedCart) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(savedCart);
-  } catch {
-    return [];
-  }
-};
-
-const writeCart = (cart) => {
-  localStorage.setItem(cartStorageKey, JSON.stringify(cart));
-};
-
-const formatPrice = (price) => `R${price}`;
-
-const getCartTotal = (cart) => cart.reduce((total, item) => total + item.price * item.quantity, 0);
-
-const getCartItemCount = (cart) => cart.reduce((total, item) => total + item.quantity, 0);
-
-const getCartItemImage = (item) => {
-  if (!item.image || item.image.startsWith('src/')) {
-    return defaultProductImage;
-  }
-
-  return item.image;
+const formatMoney = (amount, currencyCode) => {
+  const value = Math.round(Number(amount));
+  if (currencyCode === 'ZAR') return `R${value}`;
+  return `${currencyCode || ''} ${value}`.trim();
 };
 
 const setupCart = () => {
@@ -50,8 +28,10 @@ const setupCart = () => {
   const checkoutButton = document.querySelector('[data-checkout-button]');
 
   if (!drawer || !backdrop || openButtons.length === 0 || !itemsContainer || !emptyMessage || !subtotalElement) {
-    return;
+    return null;
   }
+
+  let currentCart = null;
 
   const openCart = () => {
     backdrop.classList.remove('hidden');
@@ -80,49 +60,71 @@ const setupCart = () => {
     }, 500);
   };
 
-  const renderCart = () => {
-    const cart = readCart();
-    const itemCount = getCartItemCount(cart);
+  const render = () => {
+    const lines = currentCart?.lines?.nodes || [];
+    const totalQuantity = currentCart?.totalQuantity || 0;
+    const subtotal = currentCart?.cost?.subtotalAmount;
 
     countElements.forEach((element) => {
-      element.textContent = itemCount;
+      element.textContent = totalQuantity;
     });
 
-    emptyMessage.classList.toggle('hidden', cart.length > 0);
-    subtotalElement.textContent = formatPrice(getCartTotal(cart));
+    emptyMessage.classList.toggle('hidden', lines.length > 0);
+
+    subtotalElement.textContent = subtotal
+      ? formatMoney(subtotal.amount, subtotal.currencyCode)
+      : 'R0';
 
     if (checkoutButton) {
-      checkoutButton.disabled = cart.length === 0;
-      checkoutButton.textContent = cart.length === 0 ? 'Cart empty' : 'Checkout';
+      checkoutButton.disabled = lines.length === 0;
+      checkoutButton.textContent = lines.length === 0 ? 'Cart empty' : 'Checkout';
     }
 
-    itemsContainer.innerHTML = cart.map((item) => `
-      <article class="grid grid-cols-[minmax(0,1fr)_8.75rem] items-end gap-5">
-        <img src="${getCartItemImage(item)}" alt="${item.title}" class="h-40 w-full self-end object-contain object-bottom">
+    itemsContainer.innerHTML = lines.map((line) => {
+      const variant = line.merchandise;
+      const title = variant?.product?.title || 'Item';
+      const image = variant?.image?.url || '';
+      const altText = variant?.image?.altText || title;
+      const price = formatMoney(variant?.price?.amount, variant?.price?.currencyCode);
 
-        <div class="grid gap-1 pb-3">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h3 class="text-5xl font-semibold leading-none">${item.title}</h3>
-              <p class="font-sans text-[10px] leading-4">${item.subtitle || defaultProductSubtitle}</p>
+      return `
+        <article class="grid grid-cols-[minmax(0,1fr)_8.75rem] items-end gap-5">
+          <img src="${image}" alt="${altText}" class="h-40 w-full self-end object-contain object-bottom">
+
+          <div class="grid gap-1 pb-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="text-5xl font-semibold leading-none">${title}</h3>
+                <p class="font-sans text-[10px] leading-4">${defaultProductSubtitle}</p>
+              </div>
+
+              <button type="button" aria-label="Remove ${title}" data-cart-remove="${line.id}">
+                <img src="${removeIcon}" alt="" class="w-5">
+              </button>
             </div>
 
-            <button type="button" aria-label="Remove ${item.title}" data-cart-remove="${item.id}">
-              <img src="${removeIcon}" alt="" class="w-5">
-            </button>
-          </div>
-
-          <div class="flex items-center justify-between gap-4">
-            <p class="text-2xl font-semibold">${formatPrice(item.price)}</p>
-            <div class="flex h-6 items-center rounded-full border border-white px-3 text-sm font-semibold">
-              <button type="button" class="px-1" aria-label="Decrease ${item.title} quantity" data-cart-line-minus="${item.id}">-</button>
-              <span class="px-2">${item.quantity}</span>
-              <button type="button" class="px-1" aria-label="Increase ${item.title} quantity" data-cart-line-plus="${item.id}">+</button>
+            <div class="flex items-center justify-between gap-4">
+              <p class="text-2xl font-semibold">${price}</p>
+              <div class="flex h-6 items-center rounded-full border border-white px-3 text-sm font-semibold">
+                <button type="button" class="px-1" aria-label="Decrease ${title} quantity" data-cart-line-minus="${line.id}" data-line-quantity="${line.quantity}">-</button>
+                <span class="px-2">${line.quantity}</span>
+                <button type="button" class="px-1" aria-label="Increase ${title} quantity" data-cart-line-plus="${line.id}" data-line-quantity="${line.quantity}">+</button>
+              </div>
             </div>
           </div>
-        </div>
-      </article>
-    `).join('');
+        </article>
+      `;
+    }).join('');
+  };
+
+  const refresh = async () => {
+    try {
+      currentCart = await fetchCart();
+    } catch (error) {
+      console.error('Failed to fetch cart', error);
+      currentCart = null;
+    }
+    render();
   };
 
   openButtons.forEach((button) => {
@@ -136,11 +138,8 @@ const setupCart = () => {
   backdrop.addEventListener('click', closeCart);
 
   checkoutButton?.addEventListener('click', () => {
-    if (readCart().length === 0) {
-      return;
-    }
-
-    window.location.href = '/checkout.html';
+    if (!currentCart?.checkoutUrl) return;
+    window.location.href = currentCart.checkoutUrl;
   });
 
   document.addEventListener('keydown', (event) => {
@@ -149,184 +148,149 @@ const setupCart = () => {
     }
   });
 
-  itemsContainer.addEventListener('click', (event) => {
+  itemsContainer.addEventListener('click', async (event) => {
     const removeButton = event.target.closest('[data-cart-remove]');
     const minusButton = event.target.closest('[data-cart-line-minus]');
     const plusButton = event.target.closest('[data-cart-line-plus]');
 
-    if (!removeButton && !minusButton && !plusButton) {
-      return;
+    if (!removeButton && !minusButton && !plusButton) return;
+
+    try {
+      if (removeButton) {
+        currentCart = await removeLine(removeButton.dataset.cartRemove);
+      } else if (minusButton) {
+        const lineId = minusButton.dataset.cartLineMinus;
+        const newQty = Number(minusButton.dataset.lineQuantity) - 1;
+        currentCart = await updateLineQuantity(lineId, newQty);
+      } else if (plusButton) {
+        const lineId = plusButton.dataset.cartLinePlus;
+        const newQty = Number(plusButton.dataset.lineQuantity) + 1;
+        currentCart = await updateLineQuantity(lineId, newQty);
+      }
+      render();
+    } catch (error) {
+      console.error('Cart update failed', error);
     }
-
-    const productId = removeButton?.dataset.cartRemove || minusButton?.dataset.cartLineMinus || plusButton?.dataset.cartLinePlus;
-    const cart = readCart();
-    const item = cart.find((cartItem) => cartItem.id === productId);
-
-    if (!item) {
-      return;
-    }
-
-    if (removeButton) {
-      writeCart(cart.filter((cartItem) => cartItem.id !== productId));
-      renderCart();
-      return;
-    }
-
-    if (minusButton) {
-      item.quantity -= 1;
-    }
-
-    if (plusButton) {
-      item.quantity += 1;
-    }
-
-    writeCart(cart.filter((cartItem) => cartItem.quantity > 0));
-    renderCart();
   });
 
-  renderCart();
+  refresh();
 
   return {
     openCart,
-    renderCart,
+    refresh,
+    setCart: (cart) => {
+      currentCart = cart;
+      render();
+    },
   };
 };
 
 const cartController = setupCart();
 
-const setupCheckoutPage = () => {
-  const checkoutPage = document.querySelector('[data-checkout-page]');
-  const itemsContainer = document.querySelector('[data-checkout-items]');
-  const emptyMessage = document.querySelector('[data-checkout-empty]');
-  const subtotalElement = document.querySelector('[data-checkout-subtotal]');
-  const totalElement = document.querySelector('[data-checkout-total]');
-  const paymentSubmitButton = document.querySelector('[data-payment-submit]');
-  const paymentChoiceButtons = document.querySelectorAll('[data-payment-choice]');
+const setupProductPage = async () => {
+  const productPage = document.querySelector('[data-product-page]');
+  if (!productPage) return;
 
-  if (!checkoutPage || !itemsContainer || !emptyMessage || !subtotalElement || !totalElement) {
-    return;
-  }
+  const handle = productPage.dataset.productHandle;
+  if (!handle) return;
 
-  const cart = readCart();
-  const total = getCartTotal(cart);
-
-  emptyMessage.classList.toggle('hidden', cart.length > 0);
-  subtotalElement.textContent = formatPrice(total);
-  totalElement.textContent = formatPrice(total);
-
-  if (paymentSubmitButton) {
-    paymentSubmitButton.disabled = cart.length === 0;
-    paymentSubmitButton.textContent = cart.length === 0 ? 'Cart empty' : 'Continue to payment';
-
-    paymentSubmitButton.addEventListener('click', () => {
-      if (readCart().length === 0) {
-        return;
-      }
-
-      paymentSubmitButton.textContent = 'Payment setup coming next';
-    });
-  }
-
-  itemsContainer.innerHTML = cart.map((item) => `
-    <article class="grid grid-cols-[6rem_minmax(0,1fr)] items-end gap-4">
-      <img src="${getCartItemImage(item)}" alt="${item.title}" class="h-24 w-full object-contain object-bottom">
-
-      <div>
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <h3 class="text-4xl font-semibold leading-none">${item.title}</h3>
-            <p class="font-sans text-[10px] leading-4">${item.subtitle || defaultProductSubtitle}</p>
-          </div>
-          <p class="text-2xl font-semibold">${formatPrice(item.price * item.quantity)}</p>
-        </div>
-
-        <p class="mt-1 font-sans text-xs text-white/70">Qty ${item.quantity}</p>
-      </div>
-    </article>
-  `).join('');
-
-  paymentChoiceButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const parent = button.parentElement;
-
-      parent?.querySelectorAll('[data-payment-choice]').forEach((choice) => {
-        choice.classList.remove('bg-black', 'text-white');
-        choice.classList.add('border', 'border-black');
-      });
-
-      button.classList.add('bg-black', 'text-white');
-      button.classList.remove('border', 'border-black');
-    });
-  });
-};
-
-const setupProductPage = () => {
-  const quantityControl = document.querySelector('[data-product-quantity]');
   const quantityValue = document.querySelector('[data-quantity-value]');
   const minusButton = document.querySelector('[data-quantity-minus]');
   const plusButton = document.querySelector('[data-quantity-plus]');
   const addToCartButtons = document.querySelectorAll('[data-add-to-cart]');
-
-  if (!quantityControl || !quantityValue || !minusButton || !plusButton || addToCartButtons.length === 0) {
-    return;
-  }
+  const titleElements = document.querySelectorAll('[data-product-title]');
+  const priceElements = document.querySelectorAll('[data-product-price]');
 
   let quantity = 1;
+  let variantId = null;
 
   const renderQuantity = () => {
+    if (!quantityValue) return;
     quantityValue.textContent = quantity;
-    minusButton.disabled = quantity === 1;
-    minusButton.classList.toggle('opacity-40', quantity === 1);
+    if (minusButton) {
+      minusButton.disabled = quantity === 1;
+      minusButton.classList.toggle('opacity-40', quantity === 1);
+    }
   };
 
-  minusButton.addEventListener('click', () => {
+  minusButton?.addEventListener('click', () => {
     quantity = Math.max(1, quantity - 1);
     renderQuantity();
   });
 
-  plusButton.addEventListener('click', () => {
+  plusButton?.addEventListener('click', () => {
     quantity += 1;
     renderQuantity();
   });
 
-  addToCartButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const cart = readCart();
-      const productId = button.dataset.productId;
-      const productTitle = button.dataset.productTitle;
-      const productPrice = Number(button.dataset.productPrice);
-      const productImage = button.dataset.productImage || defaultProductImage;
-      const productSubtitle = button.dataset.productSubtitle || defaultProductSubtitle;
-      const existingItem = cart.find((item) => item.id === productId);
+  try {
+    const product = await fetchProductByHandle(handle);
 
-      if (existingItem) {
-        existingItem.quantity += quantity;
-        existingItem.image = productImage;
-        existingItem.subtitle = productSubtitle;
-      } else {
-        cart.push({
-          id: productId,
-          title: productTitle,
-          price: productPrice,
-          image: productImage,
-          subtitle: productSubtitle,
-          quantity,
-        });
+    if (!product) {
+      console.error(`Product "${handle}" not found in Shopify`);
+      addToCartButtons.forEach((button) => {
+        button.textContent = 'unavailable';
+      });
+      return;
+    }
+
+    const variant = product.variants?.nodes?.find((v) => v.availableForSale) || product.variants?.nodes?.[0];
+
+    if (!variant) {
+      addToCartButtons.forEach((button) => {
+        button.textContent = 'out of stock';
+      });
+      return;
+    }
+
+    variantId = variant.id;
+
+    titleElements.forEach((element) => {
+      element.textContent = product.title;
+    });
+
+    priceElements.forEach((element) => {
+      element.textContent = formatMoney(variant.price.amount, variant.price.currencyCode);
+    });
+
+    addToCartButtons.forEach((button) => {
+      button.disabled = !variant.availableForSale;
+      button.textContent = variant.availableForSale ? 'add to cart' : 'out of stock';
+    });
+  } catch (error) {
+    console.error('Failed to load product', error);
+    addToCartButtons.forEach((button) => {
+      button.textContent = 'error';
+    });
+    return;
+  }
+
+  renderQuantity();
+
+  addToCartButtons.forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!variantId) return;
+
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'adding…';
+
+      try {
+        const cart = await addToCart(variantId, quantity);
+        cartController?.setCart(cart);
+        cartController?.openCart();
+        button.textContent = 'added';
+      } catch (error) {
+        console.error('Add to cart failed', error);
+        button.textContent = 'error';
       }
 
-      writeCart(cart);
-      cartController?.renderCart();
-      cartController?.openCart();
-      button.textContent = 'added';
-
       window.setTimeout(() => {
-        button.textContent = 'add to cart';
+        button.textContent = originalText;
+        button.disabled = false;
       }, 1200);
     });
   });
-
-  renderQuantity();
 };
 
 setupProductPage();
-setupCheckoutPage();
