@@ -1,11 +1,11 @@
 export const primaryNavItems = [
   { label: 'home', href: '/' },
-  { label: 'grootman', href: '/grootman.html' },
-  { label: 'about', href: '/about.html' },
+  { label: 'grootman', href: '/product/grootman' },
+  { label: 'about', href: '/about' },
 ]
 
 export const footerLinks = [
-  { label: 'about', href: '/about.html' },
+  { label: 'about', href: '/about' },
   { label: 'contact us', href: 'mailto:hello@manyfaces.co.za' },
   { label: 'FAQs', href: '#faqs' },
   { label: 'terms of service', href: '#terms' },

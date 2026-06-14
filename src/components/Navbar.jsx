@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { CircleUserRound, ShoppingBag } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import manyfacesLogo from '@/assets/img/manyfacesLogo.svg'
 import { Button } from '@/components/ui/button'
@@ -19,15 +20,17 @@ export function Navbar({ cartCount, onCartOpen }) {
       transition={{ duration: 0.55, ease: [0.19, 1, 0.22, 1] }}
       className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-7 py-4 md:px-20 lg:px-28"
     >
-      <a href="/" aria-label="manyfaces home" className="shrink-0">
+      <Link to="/" aria-label="manyfaces home" className="shrink-0">
         <img src={manyfacesLogo} alt="manyfaces Logo" className="w-[150px]" />
-      </a>
+      </Link>
 
       <NavigationMenu className="hidden md:flex">
         <NavigationMenuList>
           {primaryNavItems.map((item) => (
             <NavigationMenuItem key={item.href}>
-              <NavigationMenuLink href={item.href}>{item.label}</NavigationMenuLink>
+              <NavigationMenuLink asChild>
+                <Link to={item.href}>{item.label}</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
@@ -41,9 +44,9 @@ export function Navbar({ cartCount, onCartOpen }) {
           className="hidden text-black hover:bg-black/10 md:inline-flex"
           aria-label="Account"
         >
-          <a href="#account">
+          <Link to="/#account">
             <CircleUserRound className="size-6" />
-          </a>
+          </Link>
         </Button>
 
         <Button

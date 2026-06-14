@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 import footerLogo from '@/assets/img/manyfacesFooterLogo.svg'
 import { footerLinks } from '@/data/navigation'
@@ -34,7 +35,11 @@ export function Footer() {
               whileHover={{ x: 10, color: 'rgb(245 245 245)' }}
               transition={{ duration: 0.2 }}
             >
-              <a href={link.href}>{link.label}</a>
+              {link.href.startsWith('mailto:') ? (
+                <a href={link.href}>{link.label}</a>
+              ) : (
+                <Link to={link.href}>{link.label}</Link>
+              )}
             </motion.li>
           ))}
         </ul>
