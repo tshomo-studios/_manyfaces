@@ -3,16 +3,15 @@ import { createStorefrontApiClient } from '@shopify/storefront-api-client';
 const storeDomain = import.meta.env.VITE_SHOPIFY_DOMAIN;
 const publicAccessToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
 const apiVersion = import.meta.env.VITE_SHOPIFY_API_VERSION || '2025-01';
+const isConfigured = Boolean(storeDomain && publicAccessToken);
 
-if (!storeDomain || !publicAccessToken) {
-  throw new Error('Shopify env vars missing: set VITE_SHOPIFY_DOMAIN and VITE_SHOPIFY_STOREFRONT_TOKEN in .env.local');
-}
-
-const client = createStorefrontApiClient({
-  storeDomain,
-  apiVersion,
-  publicAccessToken,
-});
+const client = isConfigured
+  ? createStorefrontApiClient({
+      storeDomain,
+      apiVersion,
+      publicAccessToken,
+    })
+  : null;
 
 const cartIdKey = 'manyfaces-shopify-cart-id';
 
@@ -103,6 +102,10 @@ const cartLinesRemoveMutation = `
 `;
 
 const request = async (operation, variables) => {
+  if (!client) {
+    throw new Error('Shopify env vars missing: set VITE_SHOPIFY_DOMAIN and VITE_SHOPIFY_STOREFRONT_TOKEN in .env.local');
+  }
+
   const { data, errors } = await client.request(operation, { variables });
 
   if (errors) {
