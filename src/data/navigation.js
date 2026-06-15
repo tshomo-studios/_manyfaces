@@ -4,12 +4,60 @@ export const primaryNavItems = [
   { label: 'about', href: '/about' },
 ]
 
-export const footerLinks = [
-  { label: 'about', href: '/about' },
-  { label: 'contact us', href: 'mailto:hello@manyfaces.co.za' },
-  { label: 'FAQs', href: '#faqs' },
-  { label: 'terms of service', href: '#terms' },
-  { label: 'privacy policy', href: '#privacy' },
+export const footerSections = [
+  {
+    title: 'Shop',
+    links: [
+      { label: 'New Releases', href: '/' },
+      { label: 'Featured Collectibles', href: '/product/grootman' },
+      { label: 'Limited Editions', href: '/product/grootman' },
+      { label: 'Best Sellers', href: '/' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Our Story', href: '/about' },
+      { label: 'Careers', href: '#careers' },
+      { label: 'Contact', href: 'mailto:hello@manyfaces.co.za' },
+    ],
+  },
+  {
+    title: 'Support',
+    links: [
+      { label: 'FAQs', href: '#faqs' },
+      { label: 'Shipping Policy', href: '#shipping' },
+      { label: 'Returns', href: '#returns' },
+      { label: 'Track Order', href: '#track' },
+    ],
+  },
+  {
+    title: 'Legal',
+    links: [
+      { label: 'Privacy Policy', href: '#privacy' },
+      { label: 'Terms of Service', href: '#terms' },
+      { label: 'Cookie Policy', href: '#cookies' },
+    ],
+  },
+  {
+    title: 'Community',
+    links: [
+      { label: 'Instagram', href: 'https://instagram.com/manyfaces' },
+      { label: 'YouTube', href: 'https://youtube.com/manyfaces' },
+      { label: 'TikTok', href: 'https://tiktok.com/@manyfaces' },
+      { label: 'Newsletter', href: '#newsletter' },
+    ],
+  },
+  {
+    title: 'Creators',
+    links: [
+      { label: 'Artist Collaborations', href: '#collabs' },
+      { label: 'Submit Artwork', href: '#submit' },
+      { label: 'Licensing', href: '#licensing' },
+      { label: 'Partnerships', href: '#partners' },
+    ],
+  },
 ]
 
 export const aboutCopy = [

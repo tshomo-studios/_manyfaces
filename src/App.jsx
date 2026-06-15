@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, useLocation, useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
+import { SplashScreen } from '@/components/splash/SplashScreen'
 import { CartDialog } from '@/components/CartDialog'
 import { Footer } from '@/components/Footer'
-import { HomeHero } from '@/components/HomeHero'
+import { HomeHeroCarousel } from '@/components/home/HomeHeroCarousel'
 import { QuotesSection } from '@/components/QuotesSection'
 import { Navbar } from '@/components/Navbar'
 import { ProductDetails } from '@/components/ProductDetails'
@@ -29,6 +31,7 @@ function ProductPage({ onCartChange, onCartOpen }) {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true)
   const [cart, setCart] = useState(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const { pathname } = useLocation()
@@ -50,23 +53,33 @@ export default function App() {
 
   return (
     <div className="min-h-screen font-mango text-black">
-      <Navbar cartCount={cartCount} onCartOpen={() => setIsCartOpen(true)} />
+      <SplashScreen onComplete={() => setShowSplash(false)} />
 
-      <Routes>
-        <Route path="/" element={
-          <>
-            <HomeHero product={products[0]} />
-            <QuotesSection />
-          </>
-        } />
-        <Route path="/about" element={<AboutSection />} />
-        <Route 
-          path="/product/:handle" 
-          element={<ProductPage onCartChange={setCart} onCartOpen={() => setIsCartOpen(true)} />} 
-        />
-      </Routes>
+      {!showSplash && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+        >
+          <Navbar cartCount={cartCount} onCartOpen={() => setIsCartOpen(true)} />
 
-      <Footer />
+          <Routes>
+            <Route path="/" element={
+              <>
+                <HomeHeroCarousel />
+                <QuotesSection />
+              </>
+            } />
+            <Route path="/about" element={<AboutSection />} />
+            <Route 
+              path="/product/:handle" 
+              element={<ProductPage onCartChange={setCart} onCartOpen={() => setIsCartOpen(true)} />} 
+            />
+          </Routes>
+
+          <Footer />
+        </motion.div>
+      )}
 
       <CartDialog
         cart={cart}
