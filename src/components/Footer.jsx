@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUp, Instagram, Youtube, Send } from 'lucide-react'
 
 import footerLogo from '@/assets/img/manyfacesFooterLogo.svg'
-import { footerSections } from '@/data/navigation'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 import { Button } from '@/components/ui/button'
 
 const containerVariants = {
@@ -28,6 +28,9 @@ const itemVariants = {
 }
 
 export function Footer() {
+  const { siteSettings } = useSiteContent()
+  const footerSections = siteSettings?.footerSections || []
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }

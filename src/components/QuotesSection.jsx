@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { quotes } from '@/data/quotes'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -19,6 +19,8 @@ const itemVariants = {
 }
 
 export function QuotesSection() {
+  const { quotes } = useSiteContent()
+
   return (
     <motion.section
       variants={containerVariants}

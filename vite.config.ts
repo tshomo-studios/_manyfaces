@@ -7,6 +7,9 @@ export default defineConfig({
     react(),
   ],
   assetsInclude: ['**/*.PNG'],
+  optimizeDeps: {
+    include: ['sanity', '@sanity/vision', 'styled-components'],
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

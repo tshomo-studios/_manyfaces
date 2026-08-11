@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { featuredProduct } from '@/data/products'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 import { removeLine, updateLineQuantity } from '@/shopify/client'
 
 const formatMoney = (amount, currencyCode) => {
@@ -32,6 +32,7 @@ const itemVariants = {
 }
 
 export function CartDialog({ cart, open, onOpenChange, onCartChange }) {
+  const { featuredProduct } = useSiteContent()
   const lines = cart?.lines?.nodes || []
   const subtotal = cart?.cost?.subtotalAmount
   const subtotalText = subtotal ? formatMoney(subtotal.amount, subtotal.currencyCode) : 'R0'
@@ -93,7 +94,7 @@ export function CartDialog({ cart, open, onOpenChange, onCartChange }) {
               {lines.map((line) => {
                 const variant = line.merchandise
                 const title = variant?.product?.title || 'Item'
-                const image = variant?.image?.url || featuredProduct.image
+                const image = variant?.image?.url || featuredProduct?.image
                 const altText = variant?.image?.altText || title
                 const price = formatMoney(variant?.price?.amount, variant?.price?.currencyCode)
 
@@ -107,7 +108,7 @@ export function CartDialog({ cart, open, onOpenChange, onCartChange }) {
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <h3 className="text-5xl font-semibold leading-none">{title}</h3>
-                              <p className="font-sans text-[10px] leading-4">{featuredProduct.subtitle}</p>
+                              <p className="font-sans text-[10px] leading-4">{featuredProduct?.subtitle}</p>
                             </div>
 
                             <Button

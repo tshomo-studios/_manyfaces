@@ -65,7 +65,7 @@ export function ProductHero({ product, onCartChange, onCartOpen }) {
   }, [product.handle])
 
   const displayTitle = shopifyProduct?.title || product.title
-  const displayPrice = variant?.price ? formatMoney(variant.price.amount, variant.price.currencyCode) : product.formattedPrice
+  const displayPrice = variant?.price ? formatMoney(variant.price.amount, variant.price.currencyCode) : '...'
 
   const buttonLabel = useMemo(() => {
     if (status === 'loading') return 'loading...'

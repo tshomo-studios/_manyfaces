@@ -10,9 +10,11 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
-import { primaryNavItems } from '@/data/navigation'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 
 export function Navbar({ cartCount, onCartOpen }) {
+  const { siteSettings } = useSiteContent()
+  const primaryNavItems = siteSettings?.primaryNav || []
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}

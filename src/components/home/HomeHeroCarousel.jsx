@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ProductHeroSlide } from './ProductHeroSlide'
-import { heroSlides } from '@/data/heroSlides'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 import { cn } from '@/lib/utils'
 
 /**
  * Main HomeHero Carousel Component
  */
 export function HomeHeroCarousel() {
+  const { heroSlides } = useSiteContent()
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
@@ -21,7 +22,7 @@ export function HomeHeroCarousel() {
       if (nextIndex >= heroSlides.length) nextIndex = 0
       return nextIndex
     })
-  }, [])
+  }, [heroSlides.length])
 
   // Auto-rotation: 7 seconds
   useEffect(() => {
@@ -33,6 +34,10 @@ export function HomeHeroCarousel() {
 
     return () => clearInterval(interval)
   }, [paginate, isHovered])
+
+  if (heroSlides.length === 0) {
+    return null
+  }
 
   const variants = {
     enter: (direction) => ({

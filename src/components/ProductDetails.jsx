@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { ShoppingBag } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -20,10 +20,41 @@ const detailItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.19, 1, 0.22, 1] } },
 }
 
+const formatMoney = (amount, currencyCode) => {
+  const value = Math.round(Number(amount))
+  if (currencyCode === 'ZAR') return `R${value}`
+  return `${currencyCode || ''} ${value}`.trim()
+}
+
 export function ProductDetails({ product, onCartChange, onCartOpen }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-120px' })
   const [status, setStatus] = useState('ready')
+  const [displayPrice, setDisplayPrice] = useState('')
+
+  useEffect(() => {
+    let ignore = false
+
+    fetchProductByHandle(product.handle)
+      .then((remoteProduct) => {
+        if (ignore) return
+
+        const variant =
+          remoteProduct?.variants?.nodes?.find((item) => item.availableForSale) ||
+          remoteProduct?.variants?.nodes?.[0]
+
+        if (variant?.price) {
+          setDisplayPrice(formatMoney(variant.price.amount, variant.price.currencyCode))
+        }
+      })
+      .catch((error) => {
+        console.warn(error.message)
+      })
+
+    return () => {
+      ignore = true
+    }
+  }, [product.handle])
 
   const handleAdd = async () => {
     setStatus('adding')
@@ -86,7 +117,7 @@ export function ProductDetails({ product, onCartChange, onCartOpen }) {
           ))}
 
           <motion.div variants={detailItem} className="flex items-center gap-6 pt-2 md:pt-12">
-            <p className="text-6xl font-semibold">{product.formattedPrice}</p>
+            <p className="text-6xl font-semibold">{displayPrice || '...'}</p>
             <Button
               type="button"
               className="h-14 rounded-full bg-black px-10 font-mango text-2xl font-semibold text-white hover:bg-black/80"

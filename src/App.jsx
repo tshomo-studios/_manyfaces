@@ -11,12 +11,18 @@ import { Navbar } from '@/components/Navbar'
 import { ProductDetails } from '@/components/ProductDetails'
 import { ProductHero } from '@/components/ProductHero'
 import { AboutSection } from '@/components/AboutSection'
+import StudioPage from '@/pages/Studio'
+import { SiteContentProvider, useSiteContent } from '@/sanity/SiteContentContext'
 import { fetchCart } from '@/shopify/client'
-import { products, getProductByHandle } from '@/data/products'
 
 function ProductPage({ onCartChange, onCartOpen }) {
   const { handle } = useParams()
+  const { getProductByHandle, loading } = useSiteContent()
   const product = getProductByHandle(handle)
+
+  if (loading) {
+    return null
+  }
 
   if (!product) {
     return <div className="pt-40 text-center text-4xl">Product not found</div>
@@ -30,11 +36,12 @@ function ProductPage({ onCartChange, onCartOpen }) {
   )
 }
 
-export default function App() {
+function MainApp() {
   const [showSplash, setShowSplash] = useState(true)
   const [cart, setCart] = useState(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const { pathname } = useLocation()
+  const { loading, error } = useSiteContent()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -43,13 +50,25 @@ export default function App() {
   useEffect(() => {
     fetchCart()
       .then(setCart)
-      .catch((error) => {
-        console.warn(error.message)
+      .catch((fetchError) => {
+        console.warn(fetchError.message)
         setCart(null)
       })
   }, [])
 
   const cartCount = cart?.totalQuantity || 0
+
+  if (loading) {
+    return null
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6 font-sans text-sm">
+        Unable to load site content. Check Sanity env vars and CORS settings.
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen font-mango text-black">
@@ -64,16 +83,19 @@ export default function App() {
           <Navbar cartCount={cartCount} onCartOpen={() => setIsCartOpen(true)} />
 
           <Routes>
-            <Route path="/" element={
-              <>
-                <HomeHeroCarousel />
-                <QuotesSection />
-              </>
-            } />
+            <Route
+              path="/"
+              element={
+                <>
+                  <HomeHeroCarousel />
+                  <QuotesSection />
+                </>
+              }
+            />
             <Route path="/about" element={<AboutSection />} />
-            <Route 
-              path="/product/:handle" 
-              element={<ProductPage onCartChange={setCart} onCartOpen={() => setIsCartOpen(true)} />} 
+            <Route
+              path="/product/:handle"
+              element={<ProductPage onCartChange={setCart} onCartOpen={() => setIsCartOpen(true)} />}
             />
           </Routes>
 
@@ -88,5 +110,24 @@ export default function App() {
         onCartChange={setCart}
       />
     </div>
+  )
+}
+
+export default function App() {
+  const { pathname } = useLocation()
+  const isStudio = pathname.startsWith('/studio')
+
+  if (isStudio) {
+    return (
+      <Routes>
+        <Route path="/studio/*" element={<StudioPage />} />
+      </Routes>
+    )
+  }
+
+  return (
+    <SiteContentProvider>
+      <MainApp />
+    </SiteContentProvider>
   )
 }

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-import { aboutCopy } from '@/data/navigation'
+import { useSiteContent } from '@/sanity/SiteContentContext'
 
 const variants = {
   hidden: { opacity: 0, y: 26 },
@@ -12,6 +12,9 @@ const variants = {
 }
 
 export function AboutSection() {
+  const { siteSettings } = useSiteContent()
+  const aboutCopy = siteSettings?.aboutCopy || []
+
   return (
     <main className="px-7 pb-16 pt-32 md:px-20 md:pt-44 lg:px-28">
       <motion.section variants={variants} initial="hidden" animate="visible">
