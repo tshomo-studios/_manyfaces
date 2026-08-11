@@ -25,6 +25,8 @@ export function useStage<T extends HTMLElement>() {
     let cy = 0;
     let tp = 0;
     let cp = 0;
+    let tf = 1;
+    let cf = 1;
     let raf = 0;
 
     const onMove = (e: PointerEvent) => {
@@ -36,6 +38,11 @@ export function useStage<T extends HTMLElement>() {
       const r = el.getBoundingClientRect();
       const total = r.height - window.innerHeight;
       tp = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+      // Once the stage releases from its pinned frame it keeps scrolling
+      // normally, dragging its content up past the fixed nav. Fade it out
+      // over that exit so nothing lingers/collides with the nav on the way.
+      const overshoot = total > 0 ? Math.max(0, -r.top - total) : 0;
+      tf = 1 - Math.min(1, overshoot / (window.innerHeight * 0.5));
     };
 
     const loop = () => {
@@ -44,9 +51,11 @@ export function useStage<T extends HTMLElement>() {
       cx += (tx - cx) * ease;
       cy += (ty - cy) * ease;
       cp += (tp - cp) * (reduce ? 1 : 0.12);
+      cf += (tf - cf) * (reduce ? 1 : 0.12);
       el.style.setProperty("--mx", cx.toFixed(4));
       el.style.setProperty("--my", cy.toFixed(4));
       el.style.setProperty("--p", cp.toFixed(4));
+      el.style.opacity = cf.toFixed(4);
       raf = requestAnimationFrame(loop);
     };
 
