@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Stage, World, Layer } from "@/lib/stage";
 import { GROOTMAN } from "@/lib/product";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FigureViewer } from "@/components/FigureViewer";
 import { useCart, RAND } from "@/lib/cart";
 
 export const Route = createFileRoute("/grootman")({
@@ -47,6 +47,17 @@ export const Route = createFileRoute("/grootman")({
   component: GrootmanPage,
 });
 
+const SPEC_ROWS = [
+  { label: "Details", value: GROOTMAN.details, display: false },
+  { label: "Dimensions", value: "250 × 180 × 180 mm", display: true },
+  { label: "Material", value: GROOTMAN.material, display: true },
+  {
+    label: "Shipping",
+    value: "Included in the price when located in South Africa.",
+    display: false,
+  },
+];
+
 function GrootmanPage() {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
@@ -64,78 +75,77 @@ function GrootmanPage() {
 
   return (
     <main>
-      <Stage className="relative">
-        <div className="grid gap-10 px-7 pt-28 md:grid-cols-2 md:items-start md:gap-16 md:px-20 lg:px-28">
-          {/* pinned, pointer-reactive figure */}
-          <div className="stage-3d sticky top-0 hidden h-screen md:block">
-            <World intensity={1.4} className="flex items-center justify-center">
-              <Layer
-                depth={-260}
-                rise={-80}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              >
-                <span className="select-none text-[16vw] font-semibold leading-none text-foreground/8">
-                  001
-                </span>
-              </Layer>
-              <Layer
-                depth={30}
-                rise={-40}
-                className="pointer-events-none absolute inset-x-0 bottom-[14%] flex justify-center"
-              >
-                <div className="h-[5vh] w-[24vw] rounded-[50%] bg-black/25 blur-2xl" />
-              </Layer>
-              <Layer
-                depth={170}
-                rise={-60}
-                zoom={0.12}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              >
+      <nav
+        aria-label="Breadcrumb"
+        className="eyebrow mx-auto max-w-[1440px] px-4 pt-6 text-muted-foreground sm:px-8 lg:px-14"
+      >
+        <Link to="/" className="hover:text-foreground">
+          Home
+        </Link>{" "}
+        /{" "}
+        <span aria-current="page" className="text-foreground">
+          Grootman
+        </span>
+      </nav>
+
+      <section className="mx-auto max-w-[1440px] px-4 pt-6 sm:px-8 lg:px-14">
+        <div className="flex flex-wrap items-start gap-6 md:gap-16">
+          {/* gallery */}
+          <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
+            <FigureViewer src={GROOTMAN.image} alt="Grootman collectible figure, rotatable view" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex h-[420px] items-center justify-center overflow-hidden rounded-[4px] bg-panel md:h-[520px]">
                 <img
-                  src={GROOTMAN.image}
-                  alt="Grootman collectible figure"
-                  className="max-h-[78vh] w-auto object-contain drop-shadow-2xl"
+                  src={GROOTMAN.detailImage}
+                  alt="Close-up of the Grootman figure"
+                  className="h-full max-w-full object-contain"
+                  loading="lazy"
                 />
-              </Layer>
-            </World>
+              </div>
+              <div className="flex h-[420px] flex-col justify-between rounded-[4px] bg-primary p-8 text-primary-foreground md:h-[520px]">
+                <span className="eyebrow text-white/70">From the studio</span>
+                <blockquote className="text-[clamp(48px,4.4vw,72px)] font-extrabold leading-[0.88]">
+                  {GROOTMAN.quote}
+                </blockquote>
+              </div>
+            </div>
           </div>
 
-          {/* mobile figure */}
-          <div className="flex justify-center md:hidden">
-            <img
-              src={GROOTMAN.image}
-              alt="Grootman collectible figure"
-              className="w-full max-w-md object-contain"
-            />
-          </div>
-
-          {/* scrolling copy */}
-          <div className="flex flex-col gap-8 pb-24 md:pt-40">
+          {/* buy column */}
+          <aside
+            aria-label="Purchase"
+            className="flex min-w-0 max-w-[520px] flex-[1_1_380px] flex-col gap-7 pt-2 md:sticky md:top-6"
+          >
             <div>
-              <h1 className="text-8xl font-semibold leading-none sm:text-[10rem] lg:text-[11rem]">
+              <p className="eyebrow mb-2 text-muted-foreground">Edition 001 · Johannesburg</p>
+              <h1 className="text-[clamp(96px,9vw,152px)] font-extrabold uppercase leading-[0.8]">
                 Grootman
               </h1>
-              <p className="mt-2 text-4xl font-semibold">{RAND(GROOTMAN.price)}</p>
             </div>
+            <div className="flex items-baseline justify-between gap-4 border-t border-foreground pt-4">
+              <span className="text-5xl font-semibold leading-none">{RAND(GROOTMAN.price)}</span>
+              <span className="eyebrow text-muted-foreground">Shipping incl. in SA</span>
+            </div>
+            <p className="font-sans text-[17px] leading-relaxed text-ink-soft">{GROOTMAN.blurb}</p>
 
-            <p className="max-w-md font-sans text-sm leading-5">{GROOTMAN.blurb}</p>
-
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 items-center rounded-full border border-foreground px-4 text-xl font-semibold">
+            <div className="flex flex-wrap gap-3">
+              <div className="inline-flex h-14 items-center rounded-full border border-foreground">
                 <button
                   type="button"
-                  className="px-2"
                   aria-label="Decrease quantity"
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="h-full w-13 text-[28px] font-semibold"
                 >
-                  -
+                  −
                 </button>
-                <span className="px-3">{qty}</span>
+                <span aria-live="polite" className="min-w-7 text-center text-[28px] font-semibold">
+                  {qty}
+                </span>
                 <button
                   type="button"
-                  className="px-2"
                   aria-label="Increase quantity"
                   onClick={() => setQty((q) => q + 1)}
+                  className="h-full w-13 text-[28px] font-semibold"
                 >
                   +
                 </button>
@@ -143,71 +153,50 @@ function GrootmanPage() {
               <button
                 type="button"
                 onClick={addToCart}
-                className="h-10 flex-1 rounded-full bg-primary px-8 text-xl font-semibold text-primary-foreground transition-transform hover:scale-[1.03] md:flex-none md:px-20"
+                className="h-14 flex-[1_1_200px] rounded-full bg-primary px-8 text-[30px] font-semibold leading-none text-primary-foreground transition-transform hover:scale-[1.02]"
               >
-                Add to cart
+                Add to cart — {RAND(GROOTMAN.price * qty)}
               </button>
             </div>
 
-            <blockquote className="max-w-md pt-8 text-6xl font-semibold leading-none">
-              {GROOTMAN.quote}
-            </blockquote>
-
-            <div className="pt-16">
-              <h2 className="text-4xl font-semibold">Details</h2>
-              <p className="max-w-md font-sans text-sm leading-5">{GROOTMAN.details}</p>
-            </div>
-            <div>
-              <h2 className="text-4xl font-semibold">Dimensions</h2>
-              <p className="font-sans text-base font-semibold">{GROOTMAN.dimensions}</p>
-            </div>
-            <div>
-              <h2 className="text-4xl font-semibold">Material</h2>
-              <p className="font-sans text-base font-semibold">{GROOTMAN.material}</p>
-            </div>
-
-            <div className="flex items-center gap-6 pt-8">
-              <p className="text-6xl font-semibold">{RAND(GROOTMAN.price)}</p>
-              <button
-                type="button"
-                onClick={addToCart}
-                className="h-14 rounded-full bg-primary px-10 text-2xl font-semibold text-primary-foreground transition-transform hover:scale-[1.03]"
-              >
-                Add to cart
-              </button>
-            </div>
-          </div>
+            <dl className="border-t border-border">
+              {SPEC_ROWS.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex flex-wrap gap-x-6 gap-y-2 border-b border-border py-[18px]"
+                >
+                  <dt className="eyebrow flex-[0_0_120px] pt-1 text-muted-foreground">
+                    {row.label}
+                  </dt>
+                  <dd
+                    className={
+                      row.display
+                        ? "flex-[1_1_220px] text-[28px] font-semibold leading-none"
+                        : "flex-[1_1_220px] font-sans text-base leading-relaxed"
+                    }
+                  >
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
         </div>
-      </Stage>
+      </section>
 
-      {/* detail photograph, held in its own depth plane */}
-      <Stage className="h-[180vh]">
-        <div className="stage-3d sticky top-0 h-screen overflow-hidden">
-          <World intensity={0.9} className="flex items-center justify-center">
-            <Layer
-              depth={-340}
-              rise={-140}
-              zoom={0.16}
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
-            >
-              <img
-                src={GROOTMAN.detailImage}
-                alt="Close-up of the Grootman collectible figure"
-                className="h-[80vh] w-auto object-contain"
-                loading="lazy"
-              />
-            </Layer>
-            <Layer depth={300} rise={-70} className="absolute inset-x-0 bottom-[12%] text-center">
-              <Link
-                to="/"
-                className="inline-flex rounded-full bg-primary px-10 py-3 text-2xl font-semibold text-primary-foreground"
-              >
-                Back to the stage
-              </Link>
-            </Layer>
-          </World>
+      <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 md:py-28 lg:px-14">
+        <div className="flex flex-wrap items-end justify-between gap-6 border-t border-foreground pt-6">
+          <p className="max-w-[760px] text-[clamp(56px,6vw,96px)] font-extrabold leading-[0.86]">
+            One figure. Many faces to come.
+          </p>
+          <Link
+            to="/"
+            className="inline-flex h-14 items-center rounded-full border border-foreground px-9 text-[30px] font-semibold leading-none"
+          >
+            Back to home
+          </Link>
         </div>
-      </Stage>
+      </section>
 
       <SiteFooter />
     </main>

@@ -22,6 +22,7 @@ type CartState = {
   setOpen: (v: boolean) => void;
   add: (line: Omit<CartLine, "qty">, qty: number) => void;
   remove: (handle: string) => void;
+  setQty: (handle: string, qty: number) => void;
   count: number;
   subtotal: number;
 };
@@ -65,6 +66,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines((prev) => prev.filter((l) => l.handle !== handle));
   }, []);
 
+  const setQty = useCallback((handle: string, qty: number) => {
+    setLines((prev) =>
+      prev.map((l) => (l.handle === handle ? { ...l, qty: Math.max(1, qty) } : l)),
+    );
+  }, []);
+
   const value = useMemo<CartState>(
     () => ({
       lines,
@@ -72,10 +79,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setOpen,
       add,
       remove,
+      setQty,
       count: lines.reduce((n, l) => n + l.qty, 0),
       subtotal: lines.reduce((n, l) => n + l.qty * l.price, 0),
     }),
-    [lines, open, add, remove],
+    [lines, open, add, remove, setQty],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

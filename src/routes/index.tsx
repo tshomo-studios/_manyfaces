@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Stage, World, Layer } from "@/lib/stage";
 import { GROOTMAN } from "@/lib/product";
 import { SiteFooter } from "@/components/SiteFooter";
+import { useCart, RAND } from "@/lib/cart";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,145 +27,156 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+const SPECS = [
+  { label: "Edition", value: "001 / Johannesburg" },
+  { label: "Dimensions", value: "250 × 180 × 180 mm" },
+  { label: "Material", value: "Hand-finished resin" },
+  { label: "Shipping", value: "Included in SA" },
+];
+
+const pill =
+  "inline-flex h-14 items-center rounded-full px-9 text-[30px] font-semibold leading-none transition-transform hover:scale-[1.03]";
+
 function Index() {
+  const { add } = useCart();
+
   return (
     <main>
-      {/* ---------- Act one: the figure arrives ---------- */}
-      <Stage className="h-[420vh]">
-        <div className="stage-3d sticky top-0 h-screen overflow-hidden">
-          <World className="flex items-center justify-center">
-            {/* ghost wordmark, deepest plane */}
-            <Layer
-              depth={-620}
-              rise={-140}
-              className="pointer-events-none absolute inset-x-0 top-[18%] text-center"
-            >
-              <span className="select-none text-[26vw] font-semibold leading-none text-foreground/8">
-                manyfaces
+      {/* ---------- Hero: catalogue plate ---------- */}
+      <section
+        id="figure"
+        className="mx-auto max-w-[1440px] scroll-mt-4 px-4 pt-6 sm:px-8 md:pt-10 lg:px-14 lg:pt-14"
+      >
+        <div className="flex flex-wrap items-stretch gap-6 md:gap-10">
+          <div className="flex min-w-0 flex-[1_1_420px] flex-col justify-between gap-10 pt-2">
+            <div className="eyebrow flex justify-between text-muted-foreground">
+              <span>Plate 001</span>
+              <span>Johannesburg</span>
+            </div>
+            <h1 className="text-[clamp(120px,16vw,248px)] font-extrabold uppercase leading-[0.78] tracking-[-0.01em]">
+              Groot&#8203;man
+            </h1>
+            <p className="max-w-[440px] font-sans text-lg leading-normal text-ink-soft">
+              A hand-finished collectible figure of the Johannesburg taxi driver — a portrait of our
+              fathers, uncles and grand timers.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link to="/grootman" className={`${pill} bg-primary text-primary-foreground`}>
+                Get to know him
+              </Link>
+              <span className="pl-2 text-[34px] font-semibold leading-none">
+                {RAND(GROOTMAN.price)}
               </span>
-            </Layer>
+            </div>
+          </div>
 
-            {/* name type, mid plane */}
-            <Layer
-              depth={-220}
-              rise={-320}
-              zoom={0.18}
-              className="pointer-events-none absolute inset-x-0 top-[15%] text-center"
+          <figure className="relative flex min-h-[520px] min-w-0 flex-[1_1_520px] items-end justify-center overflow-hidden rounded-[4px] bg-panel md:min-h-[640px]">
+            <span
+              aria-hidden="true"
+              className="absolute left-7 top-6 text-[200px] font-extrabold leading-[0.8] text-black/[0.07]"
             >
-              <h1 className="select-none text-[20vw] font-semibold leading-[0.8] tracking-tight md:text-[15vw]">
-                Grootman
-              </h1>
-            </Layer>
-
-            {/* floor shadow */}
-            <Layer
-              depth={40}
-              rise={-90}
-              zoom={0.3}
-              className="pointer-events-none absolute inset-x-0 bottom-[6%] flex justify-center"
-            >
-              <div className="h-[6vh] w-[46vw] rounded-[50%] bg-black/25 blur-2xl" />
-            </Layer>
-
-            {/* the figure */}
-            <Layer
-              depth={160}
-              rise={-70}
-              zoom={0.34}
-              className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center"
-            >
-              <img
-                src={GROOTMAN.image}
-                alt="Grootman collectible figure, seated"
-                className="h-[70vh] w-auto object-contain drop-shadow-2xl"
-              />
-            </Layer>
-
-            {/* foreground annotations */}
-            <Layer
-              depth={240}
-              rise={-40}
-              className="pointer-events-none absolute inset-x-0 bottom-[8%] flex justify-between px-7 font-sans text-[11px] uppercase tracking-[0.3em] md:px-20 lg:px-28"
-            >
-              <span>ed. 001 / Johannesburg</span>
-              <span>250 &times; 180 &times; 180 mm</span>
-            </Layer>
-
-            <Layer
-              depth={260}
-              rise={-30}
-              className="absolute inset-x-0 bottom-[18%] flex justify-center"
-            >
-
-              <Link
-                to="/grootman"
-                className="pointer-events-auto inline-flex rounded-full bg-primary px-10 py-3 text-3xl font-semibold text-primary-foreground transition-transform hover:scale-105"
-              >
-                Get to know
-              </Link>
-            </Layer>
-
-          </World>
+              001
+            </span>
+            <img
+              src={GROOTMAN.image}
+              alt="Grootman collectible figure, seated"
+              className="relative mb-14 h-[440px] max-w-full object-contain md:h-[560px]"
+            />
+            <figcaption className="eyebrow absolute inset-x-0 bottom-0 flex justify-between gap-3 border-t border-border bg-panel px-5 py-3.5 text-ink-soft">
+              <span>Ed. 001 — Grootman</span>
+              <span>250 × 180 × 180 mm</span>
+            </figcaption>
+          </figure>
         </div>
-      </Stage>
+      </section>
 
-      {/* ---------- Act two: the quote, floating forward ---------- */}
-      <Stage className="h-[220vh]">
-        <div className="stage-3d sticky top-0 flex h-screen items-center overflow-hidden">
-          <World intensity={1.6}>
-            <Layer
-              depth={-380}
-              rise={-100}
-              className="absolute inset-x-0 top-1/2 -translate-y-[60%] px-7 md:px-20 lg:px-28"
+      {/* ---------- Spec strip ---------- */}
+      <section
+        id="specs"
+        aria-label="Specifications"
+        className="mx-auto max-w-[1440px] scroll-mt-4 px-4 pt-8 sm:px-8 md:pt-14 lg:px-14"
+      >
+        <dl className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] border-y border-b-border border-t-foreground">
+          {SPECS.map((spec) => (
+            <div
+              key={spec.label}
+              className="border-border py-5 pr-5 sm:[&:not(:last-child)]:border-r sm:[&:not(:first-child)]:pl-5"
             >
-              <p className="max-w-4xl text-[9vw] font-semibold leading-[0.85] md:text-[6vw]">
-                {GROOTMAN.quote}
+              <dt className="eyebrow text-muted-foreground">{spec.label}</dt>
+              <dd className="mt-2 text-4xl font-semibold leading-none">{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* ---------- Story ---------- */}
+      <section
+        id="story"
+        className="mx-auto max-w-[1440px] scroll-mt-4 px-4 py-20 sm:px-8 md:py-32 lg:px-14"
+      >
+        <div className="flex flex-wrap items-start gap-8 md:gap-20">
+          <div className="eyebrow flex-[0_1_200px] pt-3.5 text-muted-foreground">
+            02 — The story
+          </div>
+          <div className="flex min-w-0 flex-[1_1_560px] flex-col gap-12">
+            <blockquote className="text-[clamp(64px,8vw,128px)] font-extrabold leading-[0.86]">
+              {GROOTMAN.quote}
+            </blockquote>
+            <div className="grid max-w-[880px] gap-8 font-sans text-lg leading-relaxed text-ink-soft sm:grid-cols-2">
+              <p>{GROOTMAN.blurb}</p>
+              <p>
+                We see him sitting on the front porch of that well-respected house around the block,
+                or in front of the fleet of taxis.
               </p>
-            </Layer>
-            <Layer
-              depth={220}
-              rise={-160}
-              className="absolute bottom-[18%] right-7 max-w-sm text-right md:right-20 lg:right-28"
-            >
-              <p className="font-sans text-sm leading-6 text-foreground/80">{GROOTMAN.blurb}</p>
-            </Layer>
-
-          </World>
+            </div>
+          </div>
         </div>
-      </Stage>
+      </section>
 
-      {/* ---------- Act three: the invitation ---------- */}
-      <Stage className="h-[200vh]">
-        <div className="stage-3d sticky top-0 h-screen overflow-hidden">
-          <World intensity={0.7} className="flex items-center justify-center">
-            <Layer
-              depth={-300}
-              rise={-120}
-              zoom={0.2}
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
-            >
-              <img
-                src={GROOTMAN.detailImage}
-                alt="Close-up of the Grootman figure"
-                className="h-[70vh] w-auto object-contain opacity-90"
-                loading="lazy"
-              />
-            </Layer>
-            <Layer depth={340} rise={-60} className="absolute inset-x-0 top-[12%] text-center">
-              <p className="font-sans text-[11px] uppercase tracking-[0.4em]">manyfaces &trade;</p>
-              <h2 className="mt-4 text-[13vw] font-semibold leading-none md:text-[9vw]">
-                Meet him up close
-              </h2>
-              <Link
-                to="/grootman"
-                className="mt-8 inline-flex rounded-full bg-primary px-12 py-4 text-3xl font-semibold text-primary-foreground transition-transform hover:scale-105"
-              >
+      {/* ---------- Up close ---------- */}
+      <section className="bg-primary text-primary-foreground">
+        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-8 px-4 py-12 sm:px-8 md:gap-20 md:py-24 lg:px-14">
+          <div className="flex h-[520px] min-w-0 flex-[1_1_420px] items-center justify-center overflow-hidden rounded-[4px] bg-[oklch(0.22_0_0)] md:h-[720px]">
+            <img
+              src={GROOTMAN.detailImage}
+              alt="Close-up of the Grootman figure"
+              className="h-full max-w-full object-contain"
+              loading="lazy"
+            />
+          </div>
+          <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-7">
+            <span className="eyebrow text-white/70">03 — Up close</span>
+            <h2 className="text-[clamp(80px,9vw,152px)] font-extrabold leading-[0.82]">
+              Meet him up close
+            </h2>
+            <p className="max-w-[420px] font-sans text-lg leading-relaxed text-white/80">
+              Every figure is finished by hand, so no two Grootmen carry quite the same face.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/grootman" className={`${pill} bg-background text-foreground`}>
                 Get to know
               </Link>
-            </Layer>
-          </World>
+              <button
+                type="button"
+                onClick={() =>
+                  add(
+                    {
+                      handle: GROOTMAN.handle,
+                      title: GROOTMAN.title,
+                      price: GROOTMAN.price,
+                      image: GROOTMAN.image,
+                    },
+                    1,
+                  )
+                }
+                className={`${pill} border border-white/80 text-primary-foreground`}
+              >
+                Add to cart — {RAND(GROOTMAN.price)}
+              </button>
+            </div>
+          </div>
         </div>
-      </Stage>
+      </section>
 
       <SiteFooter />
     </main>
